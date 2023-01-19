@@ -1,0 +1,2 @@
+"0","/* Verify incidents table */
+SELECT * FROM incidents LIMIT 10;"

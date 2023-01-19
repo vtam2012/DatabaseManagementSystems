@@ -1,0 +1,6 @@
+"0","```r
+# create new dataframe \"con\" which is the columns relevant to the conditions table
+# use dbWriteTable to write values into SQL
+con<-data.frame(cid = 1:length(bs$rid), skyCondition = bs$sky_conditions, explanation = 'some explanation')
+print(con)
+```"

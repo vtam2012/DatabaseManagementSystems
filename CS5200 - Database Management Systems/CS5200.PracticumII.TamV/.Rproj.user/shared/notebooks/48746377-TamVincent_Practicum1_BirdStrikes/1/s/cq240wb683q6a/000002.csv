@@ -1,0 +1,6 @@
+"0","```r
+# create new dataframe \"air\" which is the columns relevant to the airports table
+# use dbWriteTable to write values into SQL
+air<-data.frame(aid = 1:length(bs$rid) ,airportName = bs$airport, airportCode = 'XXX', state = bs$origin)
+print(air)
+```"

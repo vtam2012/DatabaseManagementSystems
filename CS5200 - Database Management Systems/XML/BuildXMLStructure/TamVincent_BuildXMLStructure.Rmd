@@ -1,0 +1,35 @@
+---
+title: "Build XML Structure"
+name: "Vincent Tam"
+course: "CS5200"
+semester: "Fall 2022"
+output: html_notebook
+---
+
+```{r}
+# load XML library
+library(XML)
+
+xmlFile <- "TamVincent_BuildXMLStructure.xml"
+
+# Create validated DOM from XML File 
+xmlDoc <- xmlParse(xmlFile, validate = T)
+```
+
+```{r}
+# Create root variable 
+log <-xmlRoot(xmlDoc)
+
+# get certain classes
+id <- xpathSApply(xmlDoc, "//log/Visit/tid", xmlValue)
+page <- xpathSApply(xmlDoc, "//log/Page/url", xmlValue)
+visit <- xpathSApply(xmlDoc, "//log/Visit/vdate", xmlValue)
+visitor <- xpathSApply(xmlDoc, "//log/Visitor/ip", xmlValue)
+
+# add to data frame
+df <-data.frame(id = as.numeric(id) ,page = as.character(page), visit = as.character(visit) , visitor = as.character(visitor))
+
+# display data frame
+print(df)
+
+```

@@ -1,0 +1,109 @@
+---
+title: "Query XML"
+name: "Vincent Tam"
+course: "CS5200"
+semester: "Fall 2022"
+output: html_notebook
+---
+
+```{r}
+# load XML library
+library(XML)
+
+xmlFile <- "Books-v4.xml"
+
+# Create DOM from XML File
+xmlDoc <- xmlParse(xmlFile, validate = F)
+```
+
+```{r}
+# What are the titles of all books selling for more than $50? List the titles.
+
+titlesGreaterThanFifty <- xpathSApply(xmlDoc,"//catalog/book[price > 50.00]/title", xmlValue)
+
+print(titlesGreaterThanFifty)
+```
+
+```{r}
+# Who is the author of the book with the title "Oberon's Revenge"?
+
+authorOberonsRevenge <- xpathSApply(xmlDoc,"//catalog/book[title[text() = \"Oberon\'s Revenge\"]]/author", xmlValue)
+
+print(authorOberonsRevenge)
+```
+
+```{r}
+# What are the titles of the books that sell for the lowest price? (Use the min aggregation function)
+
+titlesLowestPrice <- xpathSApply(xmlDoc,"//catalog/book[price[not(. > ../../book/price)]]/title", xmlValue)
+
+print(titlesLowestPrice)
+```
+
+```{r}
+# List the title and prices of all books in the "Computer" genre.
+computerTitles <- xpathSApply(xmlDoc,"//catalog/book[genre[contains(text(),'Computer')]]/title", xmlValue)
+
+computerPrices <- xpathSApply(xmlDoc,"//catalog/book[genre[contains(text(),'Computer')]]/price", xmlValue)
+
+df <-data.frame(title = computerTitles, price = as.numeric(computerPrices))
+
+print(df)
+```
+
+```{r}
+# How many books cost more than $50? (Use the count aggregation function)
+
+countTitlesGreaterThanFifty <- xpathSApply(xmlDoc,"count(//catalog/book[price > 50.00]/title)", xmlValue)
+
+print(countTitlesGreaterThanFifty)
+
+```
+
+```{r}
+# How many books are in each genre and what is the average price? List the genre, number of books, and average price
+
+genre <- xpathSApply(xmlDoc,"//catalog/book/genre", xmlValue)
+computer <- 0
+fantasy <- 0
+sciencefiction <- 0
+romance <- 0
+horror <- 0
+
+for ( i in 1:length(genre)){
+  if("Computer" %in% genre[i]){
+    computer <- computer + 1
+  }
+  if("Fantasy" %in% genre[i]){
+    fantasy <- fantasy + 1
+  }
+  if("Science Fiction" %in% genre[i]){
+    sciencefiction <- sciencefiction + 1
+  }
+  if("Romance" %in% genre[i]){
+    romance <- romance + 1
+  }
+  if("Horror" %in% genre[i]){
+    horror <- horror + 1
+  }
+}
+
+avgPriceComputer <- 
+  round(xpathSApply(xmlDoc,"sum(//catalog/book[genre = 'Computer']/price)", xmlValue) / computer, 2)
+
+avgPriceFantasy <- 
+  round(xpathSApply(xmlDoc,"sum(//catalog/book[genre = 'Fantasy']/price)", xmlValue) / fantasy,2)
+
+avgPriceScienceFiction <- 
+  round(xpathSApply(xmlDoc,"sum(//catalog/book[genre = 'Science Fiction']/price)", xmlValue) / sciencefiction, 2)
+
+avgPriceRomance <- 
+  round(xpathSApply(xmlDoc,"sum(//catalog/book[genre = 'Romance']/price)", xmlValue) / romance,2)
+
+avgPriceHorror <- 
+  round(xpathSApply(xmlDoc,"sum(//catalog/book[genre = 'Horror']/price)", xmlValue) / horror,2)
+
+df2 <-data.frame(genre = unique(genre), numberOfBooks = c(computer, fantasy, romance, horror, sciencefiction), averagePrice = c(avgPriceComputer, avgPriceFantasy, avgPriceRomance, avgPriceHorror, avgPriceScienceFiction))
+
+print(df2)
+```

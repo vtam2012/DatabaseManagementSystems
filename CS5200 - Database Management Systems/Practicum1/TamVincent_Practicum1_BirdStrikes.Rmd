@@ -1,0 +1,257 @@
+---
+title: "Practicum1/Bird Strikes"
+author: "Vincent Tam"
+email: "tam.v@northeastern.edu"
+course: " CS5200 Fall 2022"
+output: html_notebook
+---
+```{r}
+# install required packages if not installed
+if(!"RMariaDB" %in% (.packages())){require(RMariaDB)}
+if(!"data.table" %in% (.packages())){require(data.table)}
+if(!"DBI" %in% (.packages())){require(DBI)}
+
+# Load RMariaDB library
+library(RMariaDB)
+
+# Load data.table library for fread function
+library(data.table)
+
+# Load DBI library for functions (dbConnect, dbListTables, dbWriteTable)
+library(DBI)
+```
+
+```{r}
+# NOTE: MariaDB is run locally, must execute "mysql.server start" in command line terminal prior to executing dbConnect
+```
+
+```{r}
+# create connection variable to MariaDB.
+dbcon <- dbConnect(drv = RMariaDB::MariaDB(), username = NULL, password = Sys.getenv("MYSQL_PASSWORD"),host = "localhost")
+```
+
+```{sql connection=dbcon}
+/* Show Existing Databases */
+SHOW DATABASES;
+```
+
+```{sql connection=dbcon}
+/* Create the BirdStrikesDB database */
+CREATE DATABASE BirdStrikesDB;
+```
+
+```{sql connection=dbcon}
+/* Show Databases again to verity that the BirdStrikesDB database has been created */
+SHOW DATABASES;
+```
+
+```{sql connection=dbcon}
+/* Change to the BirdStrikesDB database */
+USE BirdStrikesDB;
+```
+
+```{sql connection=dbcon}
+/* Create airports table */
+CREATE TABLE airports (
+  aid INT PRIMARY KEY NOT NULL,
+  airportName TEXT,
+  airportCode VARCHAR(3),
+  state TEXT
+);
+```
+
+```{sql connection=dbcon}
+/* Create conditions lookup table. Apparently "condition" is a keyword in MariaDB, so variable name changed to skyCondition */
+CREATE TABLE conditions (
+  cid INT PRIMARY KEY NOT NULL,
+  skyCondition ENUM('Overcast', 'No Cloud', 'Some Cloud'),
+  explanation TEXT
+);
+```
+
+```{sql connection=dbcon}
+/* Create incidents table */
+CREATE TABLE incidents (
+  rid INT PRIMARY KEY NOT NULL,
+  date DATE,
+  origin INT,
+  airline TEXT,
+  aircraft TEXT,
+  flightPhase ENUM('Take-off','Landing', 'In-Flight', 'Unknown'),
+  altitude TEXT,
+  conditions INT,
+  warning BOOLEAN,
+  CONSTRAINT fk_conditions
+    FOREIGN KEY (conditions) REFERENCES conditions(cid),
+  CONSTRAINT fk_origin
+    FOREIGN KEY (origin) REFERENCES airports(aid)
+);
+```
+
+```{sql connection=dbcon}
+/* Show that tables are present in the BirdStrikesDB database */
+SHOW TABLES;
+```
+
+```{r}
+# read in data from the csv into R as a dataframe (only loaded in the first 1000 rows), print first fifty rows to verify
+bs <- read.csv("BirdStrikesData-V2.csv", nrows = 1000)
+
+head(bs, n = 50)
+```
+
+```{r}
+# Filter out rows that have "MILITARY" as the airline
+bs<-bs[!(bs$airline %in% "MILITARY"), ]
+print(bs)
+```
+```{r}
+# Filter out rows that do not have a date
+# Assuming that date is the most important attribute. airline, and airport can be replaced with "Unknown", but flight_date is too important and cannont just be replaced. Thus, we drop rows which do not have a date on record.
+bs<-bs[!apply(bs['flight_date'] == "", 1, any),]
+
+print(bs)
+```
+```{r}
+# Remove Time from date string
+for(i in 1:length(bs$rid)){
+  bs$flight_date[i] = gsub(" .*","",bs$flight_date[i])
+}
+head(bs$flight_date)
+```
+
+```{r}
+# Normalize the "flight_phase" column of bs to have the same enum types.
+ for(i in 1:length(bs$rid)){
+    if("approach" %in% tolower(bs$flight_phase[i])){
+      bs$flight_phase[i] = "Landing"
+    }
+    else if("take-off run" %in% tolower(bs$flight_phase[i])){
+      bs$flight_phase[i] = "Take-off"
+    }
+    else if("landing roll" %in% tolower(bs$flight_phase[i])){
+      bs$flight_phase[i] = "Landing"
+    }
+    else if("climb" %in% tolower(bs$flight_phase[i])){
+      bs$flight_phase[i] = "Take-off"
+    }
+    else {
+      bs$flight_phase[i] = "Unknown"
+    }
+ }
+
+head(bs$flight_phase)
+```
+
+```{r}
+# Normalize the "pilot_warned_flag" column in bs to have the correct boolean type
+ for(i in 1:length(bs$rid)){
+    if("Y" %in% bs$pilot_warned_flag[i]){
+      bs$pilot_warned_flag[i] = TRUE
+    }
+    else if("N" %in% bs$pilot_warned_flag[i]){
+      bs$pilot_warned_flag[i] = FALSE
+    }
+ }
+
+head(bs$pilot_warned_flag)
+```
+
+```{r}
+# create new dataframe "air" which is the columns relevant to the airports table
+# use dbWriteTable to write values into SQL
+air<-data.frame(aid = 1:length(bs$rid) ,airportName = bs$airport, airportCode = 'XXX', state = bs$origin)
+print(air)
+dbWriteTable(dbcon, "airports", air, append = TRUE)
+```
+
+```{sql connection=dbcon}
+/* Verify that the airports table is now populated with data */
+SELECT * FROM airports LIMIT 10;
+```
+```{r}
+# create new dataframe "con" which is the columns relevant to the conditions table
+# use dbWriteTable to write values into SQL
+con<-data.frame(cid = 1:length(bs$rid), skyCondition = bs$sky_conditions, explanation = 'some explanation')
+print(con)
+dbWriteTable(dbcon, "conditions", con, append = TRUE)
+```
+```{sql connection=dbcon}
+/* Verify that the conditions table is now populated with data */
+SELECT * FROM conditions LIMIT 10;
+```
+```{r}
+# create new dataframe "con" which is the columns relevant to the conditions table
+# use dbWriteTable to write values into SQL
+incidents<-data.frame(
+  rid = bs$rid, 
+  date = as.Date(bs$flight_date, format='%m/%d/%Y'),
+  origin = air$aid, 
+  airline = bs$airline, 
+  aircraft = bs$aircraft,
+  flightPhase = bs$flight_phase,
+  altitude = bs$altitude_ft,
+  conditions = con$cid,
+  warning = as.logical(bs$pilot_warned_flag)
+)
+print(incidents)
+dbWriteTable(dbcon, "incidents", incidents, append = TRUE)
+```
+```{sql connection=dbcon}
+/* Verify incidents table */
+SELECT * FROM incidents LIMIT 10;
+```
+```{sql connection=dbcon}
+/* SQL query to find the 10 airlines with the greatest number of incidents. */
+SELECT airline, COUNT(*) as NumberOfIncidents FROM incidents GROUP BY airline ORDER BY COUNT(airline) DESC LIMIT 10;
+```
+```{sql connection=dbcon}
+/* SQL query to find the flight phase that had an above average number bird strike incidents (during any flight phase)*/
+SELECT flightPhase FROM incidents WHERE flightPhase IN (SELECT COUNT(*) FROM incidents GROUP BY flightPhase) > (SELECT COUNT(*) / COUNT(DISTINCT flightPhase) FROM incidents);
+```
+
+```{sql connection=dbcon}
+/* SQL query to find the number of bird strike incidents by month (across all years). 
+   Include all airlines and all flights.*/
+   
+SELECT MONTH(date) as MONTH, COUNT(*) as NumberOfIncidents FROM incidents GROUP BY MONTH;
+```
+
+```{r}
+# Build a line chart that visualizes the number of bird strikes incidents per year from 2005 to 2011. Adorn the graph with appropriate axis labels, titles, legend, data labels, etc..
+  
+# Unfortunately, from the 1000 total rows loaded from the csv, only one date was between 2005 and 2011
+#df<-dbGetQuery(dbcon, "SELECT * FROM incidents WHERE date BETWEEN '2005-01-01' AND '2011-12-31'");
+
+plot(x = length(df[(df$date >= "2005-01-01" & df$date <= "2011-12-31"), ]$date), y = df[(df$date >= "2005-01-01" & df$date <= "2011-12-31"), ]$date, type = "b", pch = 20, frame = FALSE, col = "red", main = "Bird Strike Incident vs. Year", xlab = "Number of Incidents", ylab = "Year Incident Occurred")
+```
+
+```{sql connection=dbcon}
+/* Create a stored procedure in MySQL that adds a new incident to the database. You may decide what you need to pass to the stored procedure to add a bird strike incident and you must account for there being potentially a new airport. After insertion, show (in R) that your procedure worked. */
+CREATE PROCEDURE AddNewIncident
+  @rid INT,
+  @date DATE,
+  @origin INT, 
+  @airline TEXT,
+  @aircraft TEXT,
+  @flightPhase ENUM('Take-off','Landing', 'In-Flight', 'Unknown'),
+  @altitude TEXT,
+  @conditions INT,
+  @warning BOOLEAN
+AS
+BEGIN
+  INSERT INTO `incidents` (rid, date, origin, airline, aircraft, flightPhase, altitude, conditions, warning)
+  VALUES (@rid, @date, @origin, @airline, @aircraft, @flightPhase, @altitude, @conditions, @warning)
+END
+GO;
+
+EXEC AddNewIncident @rid = 123456, @date = as.Date("10/25/2022", format = "%m/%d/%Y"), @origin = 1001, @airline = "NEW", @flightPhase = "In-Flight", @altitude = "10000", @conditions = 1001, @warning = 1;
+
+# Verify the Procedure executed
+SELECT * FROM incidents DESC LIMIT 1;
+```
+
+```{r}
+#Disconnect From Database
+dbDisconnect(dbcon)
+```

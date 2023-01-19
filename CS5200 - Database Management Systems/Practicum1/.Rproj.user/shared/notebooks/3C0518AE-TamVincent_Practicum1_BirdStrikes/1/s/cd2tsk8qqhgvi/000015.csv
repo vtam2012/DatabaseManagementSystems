@@ -1,0 +1,1 @@
+"0","dbWriteTable(dbcon, ""airports"", air, append = TRUE)"

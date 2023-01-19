@@ -1,0 +1,78 @@
+---
+title: "Query Databases and Dataframes in R wtih SQL"
+name: "Vincent Tam"
+Semester: "Fall 2022"
+output: html_notebook
+---
+
+```{r}
+# Import RSQLite library
+library(RSQLite)
+# Import sqldf library
+library(sqldf)
+
+# specify dbfile to connect to
+dbfile = "MediaDB.db"
+
+#create dbcon variable
+dbcon <- dbConnect(RSQLite::SQLite(), dbfile)
+```
+
+```{r}
+# Load "invoice_items" table into dataframe "rs"
+rs <- dbGetQuery(dbcon, "SELECT * FROM invoice_items")
+
+# Add new column to rs for extended price called ExtPrice that is Quantity times UnitPrice
+rs$ExtPrice <- rs$Quantity * rs$UnitPrice
+
+# Averged extended price(rounded to 2 decimals)
+round(mean(rs$ExtPrice), digits = 2)
+```
+
+```{r}
+# Using sqldf, write a SQL query that finds the total amount for each invoice and the number of items in the invoice. So, the result set contains rows that each have the invoice ID, the total, and the number of items.
+
+rs_new <-sqldf("SELECT InvoiceId, SUM(ExtPrice) AS Total, SUM(Quantity) AS NumItems FROM `rs` GROUP BY InvoiceId")
+
+# show dataframe rs_new
+rs_new
+```
+
+```{r}
+# Create a scatter plot of the totle number of items in an invoice(x axis) versus the total (y axis). Add proper axis labels.
+
+plot(rs_new$NumItems, rs_new$Total, main = "Invoice Items", xlab = "invoice", ylab = "total")
+```
+
+```{r}
+# Apply a 10% discount to the total amount for each invoice if it has more than 5 items and stores that discounted amount in a new column in the invoices table called DiscPrice. If the invoice has 5 or fewer items of the same or of different items, then there is no discount and the DiscPrice is the original price.
+
+# create new column in "invoice_items" table fore DiscPrice
+dbExecute(dbcon, "ALTER TABLE `invoice_items` ADD DiscPrice DOUBLE")
+
+# iterate through rs_new dataframe, find all items greater than 5, calculate discounted price and update invoice item table
+
+for(i in 1:nrow(rs_new)){
+  if(rs_new$NumItems[i] > 5) {
+    discountedprice <- (rs_new$Total[i] - (rs_new$Total[i] * 0.10))
+    rs_new$DiscPrice[i] <- discountedprice
+    update <-paste0("UPDATE `invoice_items` SET `DiscPrice` = ", discountedprice, " WHERE `InvoiceId` = ", i)
+    dbExecute(dbcon, update)
+  }
+  else{
+    rs_new$DiscPrice[i] <- NA
+  }
+}
+```
+```{r}
+# reset dataframe rs with new column
+rs <- dbGetQuery(dbcon, "SELECT * FROM invoice_items")
+
+# show first 40 lines, notice InvoiceIds 3, 4, 5 now have the updated discounted price. (Compare with rs_new dataframe to see sum of quantities and total price.)
+head(rs,40)
+```
+
+```{r}
+#Disconnect From Database
+dbDisconnect(dbcon)
+```

@@ -1,0 +1,9 @@
+"0","```r
+# How many books cost more than $50? (Use the count aggregation function)
+
+countTitlesGreaterThanFifty <- xpathSApply(xmlDoc,\"count(//catalog/book[price > 50.00]/title)\", xmlValue)
+
+print(countTitlesGreaterThanFifty)
+```"
+"1","[1] 2
+"

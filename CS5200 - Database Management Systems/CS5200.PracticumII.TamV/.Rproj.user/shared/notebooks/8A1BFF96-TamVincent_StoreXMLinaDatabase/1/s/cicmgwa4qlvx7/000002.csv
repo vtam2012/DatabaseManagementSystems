@@ -1,0 +1,28 @@
+"0","```r
+# Get Number of Books in Catalog
+numBooks <- xmlSize(root)
+
+# Create data frames to hold data (memory is pre-allocated)
+Catalog.df <- data.frame(CatalogID = vector(mode = \"integer\", length = 1),
+                         BookID = vector(mode = \"character\", length = numBooks),
+                         Name = vector(mode = \"character\", length = 1),
+                         stringsAsFactors = F)
+
+Book.df <- data.frame(BookID = vector(mode = \"character\", length = numBooks),
+                      AuthorID = vector(mode = \"integer\", length = numBooks),
+                      Title = vector(mode = \"character\", length = numBooks),
+                      GenreID = vector(mode = \"integer\", length = numBooks),
+                      Price = vector(mode = \"integer\", length = numBooks),
+                      Publish_date = vector(mode = \"character\", length = numBooks),
+                      Description = vector(mode = \"character\", length = numBooks),
+                      stringsAsFactors = F)
+
+Author.df <- data.frame(AuthorID = vector(mode = \"integer\", length = numBooks),
+                        LastName = vector(mode = \"character\", length = numBooks),
+                        FirstName = vector(mode = \"character\", length = numBooks),
+                        stringsAsFactors = F)
+
+Genre.df <- data.frame(GenreID = vector(mode = \"integer\", length = numBooks),
+                       Name = vector(mode = \"character\", length = numBooks),
+                       stringsAsFactors = F)
+```"

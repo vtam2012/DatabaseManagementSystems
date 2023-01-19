@@ -1,0 +1,2 @@
+"0","/* Verify that the conditions table is now populated with data */
+SELECT * FROM conditions LIMIT 10;"

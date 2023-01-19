@@ -1,0 +1,5 @@
+"0","```sql
+/* List the title and author of all books that are less than 0.8*AVG or more than 1.2*AVG, where AVG is the average price of all books. As a predicate logic expression: { b : books(b) & (b.price < 0.8*AVG(books.price) | b.price > 1.2*AVG(books.price)) }
+*/
+SELECT Book.Title, Author.LastName as AuthorLastName, Author.FirstName as AuthorFirstName FROM Book INNER JOIN Author ON Book.AuthorID = Author.AuthorID WHERE (Book.Price < 0.8 * (SELECT AVG(Price) FROM Book) OR Book.Price > 1.2 * (SELECT AVG(Price) FROM Book));
+```"

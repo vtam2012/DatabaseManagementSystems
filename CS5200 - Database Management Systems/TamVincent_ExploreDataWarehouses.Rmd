@@ -1,0 +1,24 @@
+---
+title: "Explore Data Warehouses"
+name: "Vincent Tam"
+course: "CS5200"
+semester: "Fall 2022"
+output: html_notebook
+---
+
+```{r}
+# Question 1
+## Data warehouses are often constructed using relational databases. Explain the use of fact tables and star schemas to construct a data warehouse in a relational database. Also comment on whether a transactional database can and should be used to OLAP.
+```
+OLTP (Oonline Transaction Processing)
+OLAP (Online Analytical Processing)
+```{r}
+# Question 2
+## Explain the difference between a data warehouse, a data mart, and a data lake. Provide at least one example of their use from your experience or how you believe they might be used in practice. Find at least one video, article, or tutorial online that explains the differences and embed that into your notebook.
+```
+Data warehouses are databases that consolidate data from multiple sources, augmented with summary information, and historical data over a long time period.
+
+```{r}
+# Question 3
+## After the general explanation of fact tables and star schemas, design an appropriate fact table for Practicum I's bird strike database. Of course, there are many fact tables one could build, so pick some analytics problem and design a fact table for that. Be sure to explain your approach and design reasons. Just design it (perhaps draw an ERD for it); you do not need to actually implement it or populate it with data (of course, you may do so if you wish in preparation for the next practicum).
+```

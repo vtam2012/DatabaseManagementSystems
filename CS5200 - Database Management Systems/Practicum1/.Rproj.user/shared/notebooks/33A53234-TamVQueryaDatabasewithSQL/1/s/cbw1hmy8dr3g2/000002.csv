@@ -1,0 +1,4 @@
+"0","```sql
+/* What are the total number of unique customers for each US state (e.g., MA, CT, etc.), ordered alphabetically by state, who made at least one purchase (i.e., do not consider customers who never made a purchase) */
+SELECT customers.State, COUNT(customers.CustomerID) AS NumCustomers FROM customers INNER JOIN invoices ON customers.CustomerId = invoices.CustomerId WHERE customers.Country = \"USA\" GROUP BY customers.State
+```"

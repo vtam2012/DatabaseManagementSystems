@@ -1,0 +1,225 @@
+---
+title: "Store XML in a Database"
+name: "Vincent Tam"
+Semester: "Fall 2022"
+output: html_notebook
+---
+
+# ERD Diagram
+
+<div style="width: 640px; height: 480px; margin: 10px; position: relative;"><iframe allowfullscreen frameborder="0" style="width:640px; height:480px" src="https://lucid.app/documents/embedded/a2f846f1-98e4-464a-badc-f8b968560d1a" id="XPi.bp_Bt-zC"></iframe></div>
+
+```{r}
+# Setup
+## Import XML library
+library(XML)
+## Import RSQLite library
+library(RSQLite)
+## Import DBI library
+library(DBI)
+## Import knitr library
+library(knitr)
+
+## specify xml file
+xmlfile <- "Books-v3.xml"
+
+## specify dbfile to connect to
+dbfile = "BooksDB.db"
+
+## create dbcon variable
+dbcon <- dbConnect(RSQLite::SQLite(), dbfile)
+```
+
+```{r}
+# Reading XML file and parse into DOM
+xmlDOM <- xmlParse(file = xmlfile)
+
+# Get root node of the DOM tree
+root <- xmlRoot(xmlDOM)
+```
+
+```{r}
+# Get Number of Books in Catalog
+numBooks <- xmlSize(root)
+
+# Create data frames to hold data (memory is pre-allocated, 16 books = 16 rows)
+Catalog.df <- data.frame(CatalogID = vector(mode = "integer", length = 1),
+                         BookID = vector(mode = "character", length = numBooks),
+                         Name = vector(mode = "character", length = 1),
+                         stringsAsFactors = F)
+
+Book.df <- data.frame(BookID = vector(mode = "character", length = numBooks),
+                      AuthorID = vector(mode = "integer", length = numBooks),
+                      Title = vector(mode = "character", length = numBooks),
+                      GenreID = vector(mode = "integer", length = numBooks),
+                      Price = vector(mode = "integer", length = numBooks),
+                      Publish_date = vector(mode = "character", length = numBooks),
+                      Description = vector(mode = "character", length = numBooks),
+                      stringsAsFactors = F)
+
+Author.df <- data.frame(AuthorID = vector(mode = "integer", length = numBooks),
+                        LastName = vector(mode = "character", length = numBooks),
+                        FirstName = vector(mode = "character", length = numBooks),
+                        stringsAsFactors = F)
+
+Genre.df <- data.frame(GenreID = vector(mode = "integer", length = numBooks),
+                       Name = vector(mode = "character", length = numBooks),
+                       stringsAsFactors = F)
+```
+
+```{r}
+# Catalog is the root, only one item, set it to 1, give the name "Default"
+Catalog.df$CatalogID <- 1
+Catalog.df$Name <- "Default"
+
+# Process all other nodes into data frames
+for(i in 1:numBooks)
+{
+  # a Book node
+  aBook <- root[[i]]
+  
+  # use book attribute for bookID, in XML <book id="bk211">
+  bookAtttrs <- xmlAttrs(aBook)
+  bookID <- bookAtttrs[1]
+  
+  # Set bookID for Catalog and Book Dataframes
+  Catalog.df$BookID[i] <- bookID
+  Book.df$BookID[i] <- bookID
+  
+  # Get Author's Name, split into first and last name and store into different variables
+  authorFullName <- strsplit(xmlValue(aBook[[1]]), split = ", ")
+  authorLastName <- authorFullName[[1]][1]
+  authorFirstName <- authorFullName[[1]][2]
+  
+  # Book Title
+  title <- xmlValue(aBook[[2]])
+  
+  # <edition> is optional, skip if necessary, then get remaining data (genre, price, publish_date, and description)
+  edition <- aBook[[3]]
+  if(xmlName(edition) %in% "edition"){
+    genre <- xmlValue(aBook[[4]])
+    price <- xmlValue(aBook[[5]])
+    publish_date <- xmlValue(aBook[[6]])
+    description <- xmlValue(aBook[[7]])
+  }
+  else{
+    genre <- xmlValue(aBook[[3]])
+    price <- xmlValue(aBook[[4]])
+    publish_date <- xmlValue(aBook[[5]])
+    description <- xmlValue(aBook[[6]])
+  }
+
+  # Set data in Book Data Frame
+  Book.df$AuthorID[i] = i
+  Book.df$Title[i] <- title
+  Book.df$GenreID[i] = i
+  Book.df$Price[i] <- as.numeric(price)
+  Book.df$Publish_date[i] <- publish_date
+  Book.df$Description[i] <- description
+  
+  # Set data in Author Data Frame
+  Author.df$AuthorID[i] <- i
+  Author.df$LastName[i] <- authorLastName
+  Author.df$FirstName[i] <- authorFirstName
+
+  # Set data in Genre Data Frame
+  Genre.df$GenreID[i] <- i
+  Genre.df$Name[i] <- genre
+}
+
+# Print all Data Frames to verify. Data in Author and Genre currently contains duplicates because memory was allocated for 16 rows (numBooks <- xmlSize(root)). Need to remove duplicates and fix ID sequencing before writing dataframes to SQL tables.
+print(Catalog.df)
+print(Book.df)
+print(Author.df)
+print(Genre.df)
+```
+
+```{r}
+# Use dbWriteTable to create tables
+dbWriteTable(dbcon, "Catalog", Catalog.df, overwrite = T)
+dbWriteTable(dbcon, "Book", Book.df, overwrite = T)
+dbWriteTable(dbcon, "Author", Author.df, overwrite = T)
+dbWriteTable(dbcon, "Genre", Genre.df, overwrite = T)
+```
+
+```{sql connection=dbcon}
+/* What is the number of genres have at least three books? */
+SELECT * FROM Genre;
+```
+
+```{sql connection=dbcon}
+/* What is the number of genres have at least three books? */
+SELECT COUNT(*) as NumGenresWithThreeorMoreBooks FROM (SELECT COUNT (*) FROM Genre GROUP BY Name HAVING COUNT(*) >= 3);
+```
+
+```{sql connection=dbcon}
+/* What is the oldest year in which a publication was published?*/
+SELECT MIN(Publish_date) FROM Book;
+```
+
+```{sql connection=dbcon}
+/* Find the number of books and average price for each genre. */
+SELECT COUNT(*) as numBooks, ROUND(AVG(Price),2) as AveragePrice, Genre.Name as GenreName FROM Book INNER JOIN Genre ON Book.GenreID = Genre.GenreID GROUP BY Genre.Name;
+```
+
+```{sql connection=dbcon}
+/* List the title and author of all books that are less than 0.8*AVG or more than 1.2*AVG, where AVG is the average price of all books. As a predicate logic expression: { b : books(b) & (b.price < 0.8*AVG(books.price) | b.price > 1.2*AVG(books.price)) }
+*/
+SELECT Book.Title, Author.LastName as AuthorLastName, Author.FirstName as AuthorFirstName FROM Book INNER JOIN Author ON Book.AuthorID = Author.AuthorID WHERE (Book.Price < 0.8 * (SELECT AVG(Price) FROM Book) OR Book.Price > 1.2 * (SELECT AVG(Price) FROM Book));
+```
+
+```{r}
+#Disconnect From Database
+dbDisconnect(dbcon)
+```
+
+
+```{sql connection=dbcon}
+/* Alternate method, not used, dbWriteTable was used above */
+/* Connecting directly to database and executing SQL to create Catalog table. */
+
+/*
+CREATE TABLE Catalog (
+  CatalogID NUMERIC NOT NULL,
+  BookID TEXT NOT NULL,
+  Name TEXT,
+  PRIMARY KEY (CatalogID)
+);
+*/
+
+/* Connecting directly to database and executing SQL to create Book table. */
+
+/*
+CREATE TABLE Book (
+  BookID TEXT NOT NULL,
+  AuthorID NUMERIC NOT NULL,
+  Title TEXT,
+  GenreID NUMERIC NOT NULL,
+  Price NUMERIC,
+  Publish_date DATE,
+  Description TEXT,
+  PRIMARY KEY (BookID)
+);
+*/
+
+/* Connecting directly to database and executing SQL to create Author table. */
+
+/*
+CREATE TABLE Author (
+  AuthorID NUMERIC NOT NULL,
+  LastName TEXT,
+  FirstName TEXT, 
+  PRIMARY KEY (AuthorID),
+  FOREIGN KEY (AuthorID) REFERENCES Book (AuthorID) 
+);
+*/
+
+/*
+CREATE TABLE Genre (
+  GenreID NUMERIC NOT NULL,
+  Name TEXT,
+  PRIMARY KEY (GenreID),
+  FOREIGN KEY (GenreID) REFERENCES Book (GenreID) 
+);
+*/
+```

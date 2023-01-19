@@ -1,0 +1,9 @@
+"0","```r
+# What are the titles of the books that sell for the lowest price? (Use the min aggregation function)
+
+titlesLowestPrice <- xpathSApply(xmlDoc,\"//catalog/book[price[not(. > ../../book/price)]]/title\", xmlValue)
+
+print(titlesLowestPrice)
+```"
+"1","[1] \"Lover Birds\"     \"Splish Splash\"   \"Creepy Crawlies\"
+"

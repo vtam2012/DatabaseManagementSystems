@@ -1,0 +1,4 @@
+"0","```sql
+/* What is the number of genres have at least three books? */
+SELECT COUNT(*) as NumGenresWithThreeorMoreBooks FROM (SELECT COUNT (*) FROM Genre GROUP BY Name HAVING COUNT(*) >= 3);
+```"

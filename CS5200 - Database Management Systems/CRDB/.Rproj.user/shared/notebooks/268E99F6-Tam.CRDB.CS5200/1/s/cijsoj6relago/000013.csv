@@ -1,0 +1,7 @@
+"0","# Import RSQLite library"
+"0","library(RSQLite)"
+"0",""
+"0","dbfile = ""lessonsDB.sqlite"""
+"0",""
+"0","#create dbcon variable"
+"0","dbcon <- dbConnect(RSQLite::SQLite(), dbfile)"

@@ -1,0 +1,16 @@
+"0","```r
+# Create root variable 
+log <-xmlRoot(xmlDoc)
+
+# get certain classes
+id <- xpathSApply(xmlDoc, \"//log/Visit/tid\", xmlValue)
+page <- xpathSApply(xmlDoc, \"//log/Page/url\", xmlValue)
+visit <- xpathSApply(xmlDoc, \"//log/Visit/vdate\", xmlValue)
+visitor <- xpathSApply(xmlDoc, \"//log/Visitor/ip\", xmlValue)
+
+# add to data frame
+df <-data.frame(id = as.numeric(id) ,page = as.character(page), visit = as.character(visit) , visitor = as.character(visitor))
+
+# display
+print(df)
+```"

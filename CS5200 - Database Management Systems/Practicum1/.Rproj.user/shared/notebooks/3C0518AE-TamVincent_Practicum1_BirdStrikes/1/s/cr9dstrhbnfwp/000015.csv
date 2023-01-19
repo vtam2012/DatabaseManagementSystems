@@ -1,0 +1,1 @@
+"0","dbWriteTable(dbcon, ""conditions"", con, append = TRUE)"

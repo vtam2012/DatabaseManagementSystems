@@ -1,0 +1,12 @@
+"0","```sql
+```sql
+/* Connecting directly to database and executing SQL to create Module table. */
+
+CREATE TABLE Module (
+  number TEXT NOT NULL,
+  title TEXT NOT NULL,
+  lengthInMin NUMERIC NOT NULL,
+  PRIMARY KEY (number)
+)
+```
+```"

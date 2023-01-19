@@ -1,0 +1,4 @@
+"0","```sql
+/* What is the oldest year in which a publication was published?*/
+SELECT MIN(Publish_date) FROM Book;
+```"

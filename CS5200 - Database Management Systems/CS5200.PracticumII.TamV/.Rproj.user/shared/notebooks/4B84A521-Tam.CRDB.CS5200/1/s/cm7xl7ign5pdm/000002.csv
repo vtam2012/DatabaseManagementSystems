@@ -1,0 +1,9 @@
+"0","```r
+# Using R functions to select from Module table.
+
+selectFromModule <- \"SELECT * FROM Module\"
+
+res <- dbGetQuery(dbcon, selectFromModule)
+
+print(res)
+```"

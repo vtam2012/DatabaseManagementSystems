@@ -1,0 +1,4 @@
+"0","```sql
+/* What are the titles of each album and the number of tracks on each album */
+SELECT albums.Title, COUNT(tracks.TrackId) FROM albums LEFT OUTER JOIN tracks ON albums.AlbumId = tracks.AlbumId 
+```"

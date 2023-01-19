@@ -1,0 +1,7 @@
+"0","```r
+# Reading XML file and parse into DOM
+xmlDOM <- xmlParse(file = xmlfile)
+
+# Get root node of the DOM tree
+root <- xmlRoot(xmlDOM)
+```"

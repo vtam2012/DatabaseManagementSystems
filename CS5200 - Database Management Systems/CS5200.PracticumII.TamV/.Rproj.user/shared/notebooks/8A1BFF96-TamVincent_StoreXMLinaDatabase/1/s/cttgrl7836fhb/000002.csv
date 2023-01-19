@@ -1,0 +1,4 @@
+"0","```sql
+/* Find the number of books and average price for each genre. */
+SELECT COUNT(*) as numBooks, ROUND(AVG(Price),2) as AveragePrice, Genre.Name as GenreName FROM Book INNER JOIN Genre ON Book.GenreID = Genre.GenreID GROUP BY Genre.Name;
+```"

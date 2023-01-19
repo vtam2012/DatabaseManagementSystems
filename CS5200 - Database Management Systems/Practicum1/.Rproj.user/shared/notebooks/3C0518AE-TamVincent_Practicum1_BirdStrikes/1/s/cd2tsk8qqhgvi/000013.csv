@@ -1,0 +1,4 @@
+"0","# create new dataframe ""air"" which is the columns relevant to the airports table"
+"0","# use dbWriteTable to write values into SQL"
+"0","air<-data.frame(aid = 1:length(bs$rid) ,airportName = bs$airport, airportCode = 'XXX', state = bs$origin)"
+"0","print(air)"

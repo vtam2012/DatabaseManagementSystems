@@ -1,0 +1,4 @@
+"0","```sql
+/* What is the average age of the employees? Use SQL to round the result to one digit of precision, e.g., 23.4. Take year, month, and day into account. */
+SELECT ROUND('2022'- strftime('%Y', employees.BirthDate),1) as AGE FROM employees
+```"

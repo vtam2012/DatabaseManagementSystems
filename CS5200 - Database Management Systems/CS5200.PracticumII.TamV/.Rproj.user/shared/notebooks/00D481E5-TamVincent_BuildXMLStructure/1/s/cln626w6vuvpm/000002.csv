@@ -1,0 +1,9 @@
+"0","```r
+# load XML library
+library(XML)
+
+xmlFile <- \"TamVincent_BuildXMLStructure.xml\"
+
+# Create DOM from XML File
+xmlDoc <- xmlParse(xmlFile, validate = T)
+```"

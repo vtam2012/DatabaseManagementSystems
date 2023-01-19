@@ -1,0 +1,13 @@
+"0","# Build a line chart that visualizes the number of bird strikes incidents per year from 2005 to 2011. Adorn the graph with appropriate axis labels, titles, legend, data labels, etc.."
+"2","Warning message:
+"
+"2","In for (i in seq_len(n)) { :"
+"2","
+ "
+"2"," call dbDisconnect() when finished working with a connection
+"
+"0","  "
+"0","# Unfortunately, from the 1000 total rows loaded from the csv, only one date was between 2005 and 2011"
+"0","#df<-dbGetQuery(dbcon, ""SELECT * FROM incidents WHERE date BETWEEN '2005-01-01' AND '2011-12-31'"");"
+"0",""
+"0","plot(x = length(df[(df$date >= ""2005-01-01"" & df$date <= ""2011-12-31""), ]$date), y = df[(df$date >= ""2005-01-01"" & df$date <= ""2011-12-31""), ]$date, type = ""b"", pch = 20, frame = FALSE, col = ""red"", main = ""Bird Strike Incident vs. Year"", xlab = ""Number of Incidents"", ylab = ""Year Incident Occurred"")"

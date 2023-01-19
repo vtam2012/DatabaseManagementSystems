@@ -1,0 +1,24 @@
+"0","```sql
+/* Create a stored procedure in MySQL that adds a new incident to the database. You may decide what you need to pass to the stored procedure to add a bird strike incident and you must account for there being potentially a new airport. After insertion, show (in R) that your procedure worked. */
+CREATE PROCEDURE AddNewIncident
+  @rid INT,
+  @date DATE,
+  @origin INT, 
+  @airline TEXT,
+  @aircraft TEXT,
+  @flightPhase ENUM('Take-off','Landing', 'In-Flight', 'Unknown'),
+  @altitude TEXT,
+  @conditions INT,
+  @warning BOOLEAN
+AS
+BEGIN
+  INSERT INTO `incidents` (rid, date, origin, airline, aircraft, flightPhase, altitude, conditions, warning)
+  VALUES (@rid, @date, @origin, @airline, @aircraft, @flightPhase, @altitude, @conditions, @warning)
+END
+GO;
+
+EXEC AddNewIncident @rid = 123456, @date = as.Date(\"10/25/2022\", format = \"%m/%d/%Y\"), @origin = 1001, @airline = \"NEW\", @flightPhase = \"In-Flight\", @altitude = \"10000\", @conditions = 1001, @warning = 1;
+
+# Verify the Procedure executed
+SELECT * FROM incidents DESC LIMIT 1;
+```"

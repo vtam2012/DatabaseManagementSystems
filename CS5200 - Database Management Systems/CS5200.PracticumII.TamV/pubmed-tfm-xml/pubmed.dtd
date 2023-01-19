@@ -1,0 +1,32 @@
+<!ELEMENT PubmedArticleSet (PubmedArticle*)>
+<!ELEMENT PubmedArticle (Article?)>
+<!ELEMENT Article (Journal?, Language?, ArticleTitle?, AuthorList?)>
+<!ELEMENT Journal (ISSN?, JournalIssue?, Title?, ISOAbbreviation?)>
+<!ELEMENT ISSN (#PCDATA)>
+<!ATTLIST ISSN IssnType CDATA #REQUIRED>
+<!ELEMENT JournalIssue (Volume?, Issue?, PubDate?)>
+<!ATTLIST JournalIssue CitedMedium CDATA #REQUIRED>
+<!ELEMENT Volume (#PCDATA)>
+<!ELEMENT Issue (#PCDATA)>
+<!ELEMENT PubDate (Year?, Month?, Day?, MedlineDate?, Season?)>
+<!ELEMENT Year (#PCDATA)>
+<!ELEMENT Month (#PCDATA)>
+<!ELEMENT Day (#PCDATA)>
+<!ELEMENT MedlineDate (#PCDATA)>
+<!ELEMENT Season (#PCDATA)>
+<!ELEMENT Title (#PCDATA)>
+<!ELEMENT ISOAbbreviation (#PCDATA)>
+<!ELEMENT Language (#PCDATA)>
+<!ELEMENT ArticleTitle (#PCDATA)>
+<!ELEMENT AuthorList (Author+)>
+<!ELEMENT Author (LastName?, ForeName?, Initials?, Suffix?, AffiliationInfo?, CollectiveName?)>
+<!ELEMENT LastName (#PCDATA)>
+<!ELEMENT ForeName (#PCDATA)>
+<!ELEMENT Initials (#PCDATA)> 
+<!ELEMENT Suffix (#PCDATA)>
+<!ELEMENT CollectiveName (#PCDATA)>
+<!ELEMENT AffiliationInfo (Affiliation?)>
+<!ELEMENT Affiliation (#PCDATA)> 
+<!ATTLIST Author ValidYN CDATA #REQUIRED>
+<!ATTLIST AuthorList CompleteYN CDATA #REQUIRED>
+<!ATTLIST PubmedArticle PMID CDATA #REQUIRED>

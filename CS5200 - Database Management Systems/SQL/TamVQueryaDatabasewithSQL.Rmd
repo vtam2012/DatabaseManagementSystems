@@ -1,0 +1,64 @@
+---
+title: "Query a Database with SQL"
+output: html_notebook
+---
+
+```{r}
+# Import RSQLite library
+library(RSQLite)
+
+dbfile = "MediaDB.db"
+
+#create dbcon variable
+dbcon <- dbConnect(RSQLite::SQLite(), dbfile)
+```
+
+```{sql connection=dbcon}
+/* last name, city, and state of all customers who made at least one purchase and live in Brazil */
+SELECT DISTINCT customers.LastName, customers.City, customers.State FROM customers INNER JOIN invoices ON customers.CustomerId = invoices.CustomerId WHERE customers.Country LIKE "%Brazil%"
+```
+
+```{sql connection=dbcon}
+/* What are the titles of each album and the number of tracks on each album */
+SELECT albums.Title, COUNT(tracks.TrackId) FROM albums LEFT OUTER JOIN tracks ON albums.AlbumId = tracks.AlbumId 
+```
+```{sql connection=dbcon}
+/* List the number of tracks by media type */
+SELECT media_types.Name, COUNT(tracks.TrackId) FROM media_types LEFT OUTER JOIN tracks on media_types.MediaTypeId = tracks.MediaTypeId 
+```
+
+```{sql connection=dbcon}
+/* What is the average age of the employees? Use SQL to round the result to one digit of precision, e.g., 23.4. Take year, month, and day into account. */
+SELECT ROUND('2022'- strftime('%Y', employees.BirthDate),1) as AGE FROM employees
+```
+```{sql connection=dbcon}
+/* What are the total number of unique customers for each US state (e.g., MA, CT, etc.), ordered alphabetically by state, who made at least one purchase (i.e., do not consider customers who never made a purchase) */
+SELECT customers.State, COUNT(customers.CustomerID) AS NumCustomers FROM customers INNER JOIN invoices ON customers.CustomerId = invoices.CustomerId WHERE customers.Country = "USA" GROUP BY customers.State
+```
+```{sql connection=dbcon}
+/* How many customers never made a purchase, i.e., they appear in the customers table but not in the invoices table. */
+SELECT COUNT(customers.CustomerId) FROM customers WHERE customers.CustomerId NOT IN (SELECT invoices.CustomerId FROM invoices)
+```
+```{sql connection=dbcon}
+/* How many albums contain the substring "symphony" in the album title? */
+SELECT COUNT(albums.Title) FROM albums WHERE albums.Title LIKE "%symphony%"
+```
+```{sql connection=dbcon}
+/* What is the total "time" of all tracks per artist, i.e., add up the "Milliseconds" column in tracks? Display the artist's name and the time in hours rounded to two decimals. Only consider artists who published at least one track. */
+SELECT artists.Name, SUM(ROUND((((tracks.Milliseconds /1000)/60)/60), 2)) as Hours FROM artists INNER JOIN albums ON artists.ArtistId = albums.ArtistId INNER JOIN tracks ON tracks.AlbumId = albums.AlbumId
+```
+
+```{sql connection=dbcon}
+/* Which artist(s) published the least number tracks (greater than 0), regardless of type and format? List the artist(s) name(s). Do not list duplicates. */
+SELECT artists.Name, COUNT(tracks.TrackId) FROM artists INNER JOIN albums ON artists.ArtistId = albums.ArtistId INNER JOIN tracks ON tracks.AlbumId = albums.AlbumId GROUP BY tracks.TrackId ORDER BY COUNT(tracks.TrackID) DESC limit 1
+```
+
+```{sql connection=dbcon}
+/* Which artists have composed tracks in more than three different genres? List the artists name and the number of distinct genres they have compositions in. Do not list duplicates. */
+SELECT DISTINCT artists.Name FROM artists INNER JOIN albums ON artists.ArtistId = albums.ArtistId INNER JOIN tracks ON albums.AlbumId = tracks.AlbumId WHERE (SELECT genres.Name FROM genres INNER JOIN tracks ON genres.GenreId = tracks.GenreId)
+```
+
+```{r}
+#Disconnect From Database
+dbDisconnect(dbcon)
+```

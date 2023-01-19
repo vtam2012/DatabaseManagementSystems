@@ -1,0 +1,59 @@
+---
+title: "AnalyzeData.TamV.Rmd"
+name: "Vincent Tam"
+course: "CS5200"
+semester: "Fall 2022"
+output: html_document
+date: "2022-12-05"
+---
+
+```{r}
+# install required packages if not installed
+if(!"RMariaDB" %in% (.packages())){require(RMariaDB)}
+if(!"data.table" %in% (.packages())){require(data.table)}
+if(!"DBI" %in% (.packages())){require(DBI)}
+
+# Load RMariaDB library
+library(RMariaDB)
+
+# Load data.table library for fread function
+library(data.table)
+
+# Load DBI library for functions (dbConnect, dbListTables, dbWriteTable)
+library(DBI)
+
+# NOTE: MariaDB is run locally, must execute "mysql.server start" in command line terminal prior to executing dbConnect
+
+# create connection variable to MariaDB.
+dbcon <- dbConnect(drv = RMariaDB::MariaDB(), username = NULL, password = Sys.getenv("MYSQL_PASSWORD"),host = "localhost")
+
+UseSchema<-paste0("USE SCHEMA PracticumIISchema;")
+dbExecute(dbcon,UseSchema)
+```
+
+```{r}
+# Find the top ten authors with the most publications
+SelectTopTenAuthors <- paste0(
+  "SELECT AuthorNameDim_key, AuthorTimeDim_key, COUNT(*)
+   FROM author_facts INNER JOIN AuthorTimeDim USING(AuthorTimeDim_key)
+   GROUP BY NumArticlesWritten LIMIT 10;"
+)
+dbExecute(dbcon,SelectTopTenAuthors)
+
+```
+
+```{r}
+# Number of articles per journal per year broken down by quarter
+SelectArticleBreakdown <- paste0(
+  "SELECT NumofArticles, YearPublished, QuarterPublished, COUNT(*)
+   FROM journal_facts INNER JOIN JournalTimeDim USING(JournalTimeDim_key)
+   GROUP BY NumofArticles, YearPublished, QuarterPublished WTIH ROLLUP;"
+)
+dbExecute(dbcon,SelectArticleBreakdown)
+```
+
+
+```{r}
+#Disconnect From Database
+dbDisconnect(dbcon)
+```

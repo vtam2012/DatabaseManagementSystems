@@ -1,0 +1,15 @@
+"0","```r
+# Normalize the \"pilot_warned_flag\" column in bs to have the correct boolean type
+ for(i in 1:length(bs$rid)){
+    if(\"Y\" %in% bs$pilot_warned_flag[i]){
+      bs$pilot_warned_flag[i] = TRUE
+    }
+    else if(\"N\" %in% bs$pilot_warned_flag[i]){
+      bs$pilot_warned_flag[i] = FALSE
+    }
+ }
+
+head(bs$pilot_warned_flag)
+```"
+"1","[1] \"FALSE\" \"TRUE\"  \"FALSE\" \"TRUE\"  \"FALSE\" \"FALSE\"
+"

@@ -1,0 +1,24 @@
+"0","```r
+# Normalize the \"flight_phase\" column of bs to have the same enum types.
+ for(i in 1:length(bs$rid)){
+    if(\"approach\" %in% tolower(bs$flight_phase[i])){
+      bs$flight_phase[i] = \"Landing\"
+    }
+    else if(\"take-off run\" %in% tolower(bs$flight_phase[i])){
+      bs$flight_phase[i] = \"Take-off\"
+    }
+    else if(\"landing roll\" %in% tolower(bs$flight_phase[i])){
+      bs$flight_phase[i] = \"Landing\"
+    }
+    else if(\"climb\" %in% tolower(bs$flight_phase[i])){
+      bs$flight_phase[i] = \"Take-off\"
+    }
+    else {
+      bs$flight_phase[i] = \"Unknown\"
+    }
+ }
+
+head(bs$flight_phase)
+```"
+"1","[1] \"Take-off\" \"Landing\"  \"Landing\"  \"Take-off\" \"Landing\"  \"Take-off\"
+"

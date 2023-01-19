@@ -1,0 +1,55 @@
+"0","```r
+# Catalog is the root, only one item
+Catalog.df$CatalogID <- 1
+Catalog.df$Name <- \"Default\"
+
+# Process all other nodes into data frames
+for(i in 1:numBooks)
+{
+  aBook <- root[[i]]
+  bookAtttrs <- xmlAttrs(aBook)
+  bookID <- bookAtttrs[1]
+  
+  Catalog.df$BookID[i] <- bookID
+  Book.df$BookID[i] <- bookID
+  
+  authorFullName <- strsplit(xmlValue(aBook[[1]]), split = \", \")
+  authorLastName <- authorFullName[[1]][1]
+  authorFirstName <- authorFullName[[1]][2]
+  
+  title <- xmlValue(aBook[[2]])
+  
+  # <edition> is optional, skip if necessary
+  edition <- aBook[[3]]
+  if(xmlName(edition) %in% \"edition\"){
+    genre <- xmlValue(aBook[[4]])
+    price <- xmlValue(aBook[[5]])
+    publish_date <- xmlValue(aBook[[6]])
+    description <- xmlValue(aBook[[7]])
+  }
+  else{
+    genre <- xmlValue(aBook[[3]])
+    price <- xmlValue(aBook[[4]])
+    publish_date <- xmlValue(aBook[[5]])
+    description <- xmlValue(aBook[[6]])
+  }
+
+  Book.df$AuthorID[i] = i
+  Book.df$Title[i] <- title
+  Book.df$GenreID[i] = i
+  Book.df$Price[i] <- as.numeric(price)
+  Book.df$Publish_date[i] <- publish_date
+  Book.df$Description[i] <- description
+  
+  
+  Author.df$AuthorID[i] <- i
+  Author.df$LastName[i] <- authorLastName
+  Author.df$FirstName[i] <- authorFirstName
+
+  
+  Genre.df$GenreID[i] <- i
+  Genre.df$Name[i] <- genre
+}
+
+print(Catalog.df)
+```"

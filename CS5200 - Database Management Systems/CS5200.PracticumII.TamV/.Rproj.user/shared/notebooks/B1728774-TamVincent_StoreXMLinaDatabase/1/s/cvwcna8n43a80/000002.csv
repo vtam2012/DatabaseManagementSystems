@@ -1,0 +1,20 @@
+"0","```r
+# Setup
+## Import XML library
+library(XML)
+## Import RSQLite library
+library(RSQLite)
+## Import DBI library
+library(DBI)
+## Import knitr library
+library(knitr)
+
+## specify xml file
+xmlfile <- \"Books-v3.xml\"
+
+## specify dbfile to connect to
+dbfile = \"BooksDB.db\"
+
+## create dbcon variable
+dbcon <- dbConnect(RSQLite::SQLite(), dbfile)
+```"

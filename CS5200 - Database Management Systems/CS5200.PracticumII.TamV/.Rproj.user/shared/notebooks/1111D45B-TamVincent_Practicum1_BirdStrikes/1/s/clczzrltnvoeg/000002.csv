@@ -1,0 +1,4 @@
+"0","```sql
+/* Create the BirdStrikesDB database */
+CREATE DATABASE BirdStrikesDB;
+```"

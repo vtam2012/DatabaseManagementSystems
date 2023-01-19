@@ -1,0 +1,2 @@
+"0","/* Show Databases again to verity that the BirdStrikesDB database has been created */
+SHOW DATABASES;"

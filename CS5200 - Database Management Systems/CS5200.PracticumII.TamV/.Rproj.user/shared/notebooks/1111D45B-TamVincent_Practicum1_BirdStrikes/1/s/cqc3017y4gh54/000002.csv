@@ -1,0 +1,4 @@
+"0","```sql
+/* Show Existing Databases */
+SHOW DATABASES;
+```"

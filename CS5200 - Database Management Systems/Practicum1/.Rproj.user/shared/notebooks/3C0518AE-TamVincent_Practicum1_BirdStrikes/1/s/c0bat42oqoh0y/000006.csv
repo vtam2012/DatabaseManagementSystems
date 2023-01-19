@@ -1,0 +1,16 @@
+"0","/* Create incidents table */
+CREATE TABLE incidents (
+  rid INT PRIMARY KEY NOT NULL,
+  date DATE,
+  origin INT,
+  airline TEXT,
+  aircraft TEXT,
+  flightPhase ENUM('Take-off','Landing', 'In-Flight', 'Unknown'),
+  altitude TEXT,
+  conditions INT,
+  warning BOOLEAN,
+  CONSTRAINT fk_conditions
+    FOREIGN KEY (conditions) REFERENCES conditions(cid),
+  CONSTRAINT fk_origin
+    FOREIGN KEY (origin) REFERENCES airports(aid)
+);"

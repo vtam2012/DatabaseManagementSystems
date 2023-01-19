@@ -1,0 +1,8 @@
+"0","/* Verify that the index is indeed created */
+SELECT
+   `type`, 
+   `name`, 
+   `tbl_name`, 
+   `sql`
+  FROM sqlite_master
+WHERE `type` = 'index';"

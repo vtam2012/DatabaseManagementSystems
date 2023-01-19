@@ -1,0 +1,2 @@
+"0","# create connection variable to MariaDB."
+"0","dbcon <- dbConnect(drv = RMariaDB::MariaDB(), username = NULL, password = Sys.getenv(""MYSQL_PASSWORD""),host = ""localhost"")"

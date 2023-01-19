@@ -1,0 +1,116 @@
+---
+title: "Building Triggers"
+author: "Vincent Tam"
+semester: "CS5200 Fall 2022"
+output: html_notebook
+---
+
+```{r}
+# Import RSQLite library
+library(RSQLite)
+
+dbfile = "lessonsDB.sqlite"
+
+#create dbcon variable
+dbcon <- dbConnect(RSQLite::SQLite(), dbfile)
+```
+
+```{sql connection=dbcon}
+/* Enable foreign key constraints */
+
+PRAGMA foreign_keys = ON
+```
+
+```{r}
+# Using R functions to create Author table
+
+author <-paste0(
+  "CREATE TABLE Author (",
+    "aid NUMERIC NOT NULL,",
+    "name TEXT NOT NULL,",
+    "email TEXT NOT NULL,",
+    "affiliation TEXT CHECK(affiliation IN ('PT','FT','Contract','Associate')),",
+    "PRIMARY KEY (aid)",
+  ")"
+)
+
+dbExecute(dbcon,author)
+```
+
+```{sql connection=dbcon}
+/* Connecting directly to database and executing SQL to create Module table. */
+
+CREATE TABLE Module (
+  number TEXT NOT NULL,
+  title TEXT NOT NULL,
+  lengthInMin NUMERIC NOT NULL,
+  PRIMARY KEY (number)
+)
+```
+
+```{r}
+# Using R functions to insert into Module table in database
+
+insertIntoModule <- paste0(
+  'INSERT INTO Module VALUES', 
+  '("1","Introduction",20),',
+  '("2","Test 1", 30),',
+  '("3","Test 2",120)'
+  )
+
+dbExecute(dbcon, insertIntoModule)
+```
+
+```{r}
+# Using R functions to select from Module table.
+
+selectFromModule <- "SELECT * FROM Module"
+
+res <- dbGetQuery(dbcon, selectFromModule)
+
+print(res)
+```
+
+```{sql connection=dbcon}
+/* Using sql chunks to insert into Author table. */
+
+INSERT INTO Author (aid,name,email,affiliation) VALUES 
+  (1,"Jose","Jose@northeastern.edu","PT"),
+  (2,"Dan","Dan@northeastern.edu","Contract"),
+  (3,"Martin","Martin@northeastern.edu","FT"),
+  (4,"Kathleen","Kathleen@northeastern.edu","Associate");
+```
+
+```{sql connection=dbcon}
+/* show all data from Author table. */
+
+SELECT * FROM Author;
+```
+
+```{sql connection=dbcon}
+/* SQL Trigger to ensure no duplicate authors in Modules , Simply Delete Module from Old Author.aid, but my original database was incorrectly setup,
+   Not sure how to connect Author.aid and Module.number so trigger does not work */
+CREATE TRIGGER trigger_after_insert_author
+  AFTER INSERT ON Author
+  FOR EACH ROW 
+  BEGIN
+    DELETE FROM Module WHERE INT(Module.number) = Author.aid;
+  END
+```
+
+```{sql connection=dbcon}
+/* Test trigger by inserting into Author table */
+INSERT INTO Author (aid,name,email,affiliation) VALUES 
+  (5,"Jason","Jason@northeastern.edu","FT");
+```
+
+```{sql connection=dbcon}
+/* show all data from Module table to show trigger was executed*/
+
+SELECT * FROM Module;
+```
+
+```{r}
+#Disconnect From Database
+dbDisconnect(dbcon)
+```

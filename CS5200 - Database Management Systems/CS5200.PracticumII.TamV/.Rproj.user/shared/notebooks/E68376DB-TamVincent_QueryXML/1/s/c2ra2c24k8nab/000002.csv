@@ -1,0 +1,9 @@
+"0","```r
+# What are the titles of all books selling for more than $50? List the titles.
+
+titlesGreaterThanFifty <- xpathSApply(xmlDoc,\"//catalog/book[price > 50.00]/title\", xmlValue)
+
+print(titlesGreaterThanFifty)
+```"
+"1","[1] \"Visual Studio\"                   \"Comal for Real-Time Programming\"
+"

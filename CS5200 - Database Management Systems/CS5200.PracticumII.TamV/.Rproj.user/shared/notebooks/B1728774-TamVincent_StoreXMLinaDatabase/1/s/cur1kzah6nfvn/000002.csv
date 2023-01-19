@@ -1,0 +1,49 @@
+"0","```sql
+/* Alternate method, not used, dbWriteTable was used above */
+/* Connecting directly to database and executing SQL to create Catalog table. */
+
+/*
+CREATE TABLE Catalog (
+  CatalogID NUMERIC NOT NULL,
+  BookID TEXT NOT NULL,
+  Name TEXT,
+  PRIMARY KEY (CatalogID)
+);
+*/
+
+/* Connecting directly to database and executing SQL to create Book table. */
+
+/*
+CREATE TABLE Book (
+  BookID TEXT NOT NULL,
+  AuthorID NUMERIC NOT NULL,
+  Title TEXT,
+  GenreID NUMERIC NOT NULL,
+  Price NUMERIC,
+  Publish_date DATE,
+  Description TEXT,
+  PRIMARY KEY (BookID)
+);
+*/
+
+/* Connecting directly to database and executing SQL to create Author table. */
+
+/*
+CREATE TABLE Author (
+  AuthorID NUMERIC NOT NULL,
+  LastName TEXT,
+  FirstName TEXT, 
+  PRIMARY KEY (AuthorID),
+  FOREIGN KEY (AuthorID) REFERENCES Book (AuthorID) 
+);
+*/
+
+/*
+CREATE TABLE Genre (
+  GenreID NUMERIC NOT NULL,
+  Name TEXT,
+  PRIMARY KEY (GenreID),
+  FOREIGN KEY (GenreID) REFERENCES Book (GenreID) 
+);
+*/
+```"

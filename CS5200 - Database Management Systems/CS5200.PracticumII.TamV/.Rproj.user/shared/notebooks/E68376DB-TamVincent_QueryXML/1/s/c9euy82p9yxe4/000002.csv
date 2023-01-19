@@ -1,0 +1,9 @@
+"0","```r
+# Who is the author of the book with the title \"Oberon's Revenge\"?
+
+authorOberonsRevenge <- xpathSApply(xmlDoc,\"//catalog/book[title[text() = \\"Oberon\'s Revenge\\"]]/author\", xmlValue)
+
+print(authorOberonsRevenge)
+```"
+"1","[1] \"Corets, Eva\"
+"

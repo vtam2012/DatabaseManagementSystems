@@ -1,0 +1,2 @@
+"0","/* Show current indexes from the table ""film"", notice that no index is present for flim's replacement cost */
+SHOW INDEXES FROM film;"

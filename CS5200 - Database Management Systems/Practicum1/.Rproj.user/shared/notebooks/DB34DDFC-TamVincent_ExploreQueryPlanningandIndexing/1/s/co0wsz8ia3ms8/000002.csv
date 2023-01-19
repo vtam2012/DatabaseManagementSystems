@@ -1,0 +1,2 @@
+"0","/* Verify that the index is indeed created */
+SHOW INDEXES FROM film;"

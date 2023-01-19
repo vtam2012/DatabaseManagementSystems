@@ -1,0 +1,7 @@
+"0","```r
+# Use dbWriteTable to create tables
+dbWriteTable(dbcon, \"Catalog\", Catalog.df, overwrite = T)
+dbWriteTable(dbcon, \"Book\", Book.df, overwrite = T)
+dbWriteTable(dbcon, \"Author\", Author.df, overwrite = T)
+dbWriteTable(dbcon, \"Genre\", Genre.df, overwrite = T)
+```"

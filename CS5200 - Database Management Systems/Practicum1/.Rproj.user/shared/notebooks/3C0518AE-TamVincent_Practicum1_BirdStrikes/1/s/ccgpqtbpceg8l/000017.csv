@@ -1,0 +1,3 @@
+"0","# Filter out rows that have ""MILITARY"" as the airline"
+"0","bs<-bs[!(bs$airline %in% ""MILITARY""), ]"
+"0","print(bs)"

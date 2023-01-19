@@ -1,0 +1,6 @@
+"0","/* Create conditions lookup table. Apparently ""condition"" is a keyword in MariaDB, so variable name changed to skyCondition */
+CREATE TABLE conditions (
+  cid INT PRIMARY KEY NOT NULL,
+  skyCondition ENUM('Overcast', 'No Cloud', 'Some Cloud'),
+  explanation TEXT
+);"

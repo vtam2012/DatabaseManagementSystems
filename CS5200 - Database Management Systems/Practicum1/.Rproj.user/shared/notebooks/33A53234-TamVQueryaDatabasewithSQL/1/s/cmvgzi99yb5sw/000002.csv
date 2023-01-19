@@ -1,0 +1,4 @@
+"0","```sql
+/* How many albums contain the substring \"symphony\" in the album title? */
+SELECT COUNT(albums.Title) FROM albums WHERE albums.Title LIKE \"%symphony%\"
+```"

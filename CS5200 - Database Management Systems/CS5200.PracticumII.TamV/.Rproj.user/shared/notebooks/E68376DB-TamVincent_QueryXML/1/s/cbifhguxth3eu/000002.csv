@@ -1,0 +1,47 @@
+"0","```r
+# How many books are in each genre and what is the average price? List the genre, number of books, and average price
+
+genre <- xpathSApply(xmlDoc,\"//catalog/book/genre\", xmlValue)
+computer <- 0
+fantasy <- 0
+sciencefiction <- 0
+romance <- 0
+horror <- 0
+
+for ( i in 1:length(genre)){
+  if(\"Computer\" %in% genre[i]){
+    computer <- computer + 1
+  }
+  if(\"Fantasy\" %in% genre[i]){
+    fantasy <- fantasy + 1
+  }
+  if(\"Science Fiction\" %in% genre[i]){
+    sciencefiction <- sciencefiction + 1
+  }
+  if(\"Romance\" %in% genre[i]){
+    romance <- romance + 1
+  }
+  if(\"Horror\" %in% genre[i]){
+    horror <- horror + 1
+  }
+}
+
+avgPriceComputer <- 
+  round(xpathSApply(xmlDoc,\"sum(//catalog/book[genre = 'Computer']/price)\", xmlValue) / computer, 2)
+
+avgPriceFantasy <- 
+  round(xpathSApply(xmlDoc,\"sum(//catalog/book[genre = 'Fantasy']/price)\", xmlValue) / fantasy,2)
+
+avgPriceScienceFiction <- 
+  round(xpathSApply(xmlDoc,\"sum(//catalog/book[genre = 'Science Fiction']/price)\", xmlValue) / sciencefiction, 2)
+
+avgPriceRomance <- 
+  round(xpathSApply(xmlDoc,\"sum(//catalog/book[genre = 'Romance']/price)\", xmlValue) / romance,2)
+
+avgPriceHorror <- 
+  round(xpathSApply(xmlDoc,\"sum(//catalog/book[genre = 'Horror']/price)\", xmlValue) / horror,2)
+
+df2 <-data.frame(genre = unique(genre), numberOfBooks = c(computer, fantasy, romance, horror, sciencefiction), averagePrice = c(avgPriceComputer, avgPriceFantasy, avgPriceRomance, avgPriceHorror, avgPriceScienceFiction))
+
+print(df2)
+```"

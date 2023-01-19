@@ -1,0 +1,10 @@
+"0","```r
+# List the title and prices of all books in the \"Computer\" genre.
+computerTitles <- xpathSApply(xmlDoc,\"//catalog/book[genre[contains(text(),'Computer')]]/title\", xmlValue)
+
+computerPrices <- xpathSApply(xmlDoc,\"//catalog/book[genre[contains(text(),'Computer')]]/price\", xmlValue)
+
+df <-data.frame(title = computerTitles, price = as.numeric(computerPrices))
+
+print(df)
+```"

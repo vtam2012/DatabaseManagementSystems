@@ -1,0 +1,5 @@
+"0","```sql
+/* show all data from Author table. */
+
+SELECT * FROM Author;
+```"

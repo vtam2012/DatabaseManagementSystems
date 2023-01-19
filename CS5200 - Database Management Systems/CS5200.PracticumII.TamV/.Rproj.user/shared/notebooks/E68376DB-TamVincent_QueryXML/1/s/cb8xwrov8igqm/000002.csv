@@ -1,0 +1,9 @@
+"0","```r
+# load XML library
+library(XML)
+
+xmlFile <- \"Books-v4.xml\"
+
+# Create DOM from XML File
+xmlDoc <- xmlParse(xmlFile, validate = F)
+```"

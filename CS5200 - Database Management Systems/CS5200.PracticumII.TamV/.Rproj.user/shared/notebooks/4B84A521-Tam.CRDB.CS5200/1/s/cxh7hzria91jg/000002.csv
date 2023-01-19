@@ -1,0 +1,11 @@
+"0","```sql
+```sql
+/* Using sql chunks to insert into Author table. */
+
+INSERT INTO Author (aid,name,email,affiliation) VALUES 
+  (1,\Jose\,\Jose@northeastern.edu\,\PT\),
+  (2,\Dan\,\Dan@northeastern.edu\,\Contract\),
+  (3,\Martin\,\Martin@northeastern.edu\,\FT\),
+  (4,\Kathleen\,\Kathleen@northeastern.edu\,\Associate\);
+```
+```"

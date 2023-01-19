@@ -1,0 +1,4 @@
+"0","# read in data from the csv into R as a dataframe (only loaded in the first 1000 rows), print first fifty rows to verify"
+"0","bs <- read.csv(""BirdStrikesData-V2.csv"", nrows = 1000)"
+"0",""
+"0","head(bs, n = 50)"
