@@ -1,8 +1,0 @@
-"0","# NOTE: MariaDB is run locally, must execute ""mysql.server start"" in command line terminal prior to executing dbConnect"
-"0",""
-"0","# NOTE: sakila database for MariaDB was installed using the instructions posted here: https://dev.mysql.com/doc/sakila/en/sakila-installation.html"
-"0","# 1. Downloaded zip file from: https://dev.mysql.com/doc/index-other.html"
-"0","# 2. executed ""mysql"" in command line terminal, root is the default user no password needed"
-"0","# 3. located path to downloaded files ""sakila-schema.sql"" and ""sakila-data.sql"""
-"0","# 4. SOURCE in ""sakila-schema.sql"" and ""sakila-data.sql"""
-"0","# 5. Run ""mysql.server start"""

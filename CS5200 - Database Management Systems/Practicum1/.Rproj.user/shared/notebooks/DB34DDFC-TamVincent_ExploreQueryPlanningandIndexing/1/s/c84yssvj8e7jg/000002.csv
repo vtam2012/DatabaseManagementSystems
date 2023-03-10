@@ -1,8 +1,0 @@
-"0","/* Show current indexes, notice that no index is present for flim's replacement cost */
-SELECT
-   `type`, 
-   `name`, 
-   `tbl_name`, 
-   `sql`
-  FROM sqlite_master
-WHERE `type` = 'index';"

@@ -1,9 +1,0 @@
-"0","```r
-# Import RSQLite library
-library(RSQLite)
-
-dbfile = \"MediaDB.db\"
-
-#create dbcon variable
-dbcon <- dbConnect(RSQLite::SQLite(), dbfile)
-```"

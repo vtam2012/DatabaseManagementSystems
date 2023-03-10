@@ -1,4 +1,0 @@
-"0","```sql
-/* Show Databases again to verity that the BirdStrikesDB database has been created */
-SHOW DATABASES;
-```"

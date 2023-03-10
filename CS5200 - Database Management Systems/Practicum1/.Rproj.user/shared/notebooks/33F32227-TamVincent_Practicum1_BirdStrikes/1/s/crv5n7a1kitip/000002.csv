@@ -1,4 +1,0 @@
-"0","```sql
-/* SQL query to find the 10 airlines with the greatest number of incidents. */
-SELECT airline, COUNT(*) as NumberOfIncidents FROM incidents GROUP BY airline ORDER BY COUNT(airline) DESC LIMIT 10;
-```"

@@ -1,4 +1,0 @@
-"0","```sql
-/* List the number of tracks by media type */
-SELECT media_types.Name, COUNT(tracks.TrackId) FROM media_types LEFT OUTER JOIN tracks on media_types.MediaTypeId = tracks.MediaTypeId 
-```"

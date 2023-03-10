@@ -1,2 +1,0 @@
-"0","/* Verify that the airports table is now populated with data */
-SELECT * FROM airports LIMIT 10;"

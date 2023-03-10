@@ -1,3 +1,0 @@
-"0","```r
-dbWriteTable(dbcon, \"airports\", air, append = TRUE)
-```"

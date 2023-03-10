@@ -1,4 +1,0 @@
-"0","/* SQL query to find the number of bird strike incidents by month (across all years). 
-   Include all airlines and all flights.*/
-   
-SELECT MONTH(date) as MONTH, COUNT(*) as NumberOfIncidents FROM incidents GROUP BY MONTH;"

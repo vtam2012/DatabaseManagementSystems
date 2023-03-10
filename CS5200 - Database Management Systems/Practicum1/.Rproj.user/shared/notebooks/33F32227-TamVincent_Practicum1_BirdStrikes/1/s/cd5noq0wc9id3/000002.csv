@@ -1,4 +1,0 @@
-"0","```r
-#Disconnect From Database
-dbDisconnect(dbcon)
-```"

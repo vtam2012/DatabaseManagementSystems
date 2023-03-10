@@ -1,7 +1,0 @@
-"0","/* Create airports table */
-CREATE TABLE airports (
-  aid INT PRIMARY KEY NOT NULL,
-  airportName TEXT,
-  airportCode VARCHAR(3),
-  state TEXT
-);"

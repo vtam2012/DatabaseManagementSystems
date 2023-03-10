@@ -1,4 +1,0 @@
-"0","```sql
-/* Which artist(s) published the least number tracks (greater than 0), regardless of type and format? List the artist(s) name(s). Do not list duplicates. */
-SELECT artists.Name, COUNT(tracks.TrackId) FROM artists INNER JOIN albums ON artists.ArtistId = albums.ArtistId INNER JOIN tracks ON tracks.AlbumId = albums.AlbumId GROUP BY tracks.TrackId ORDER BY COUNT(tracks.TrackID) DESC limit 1
-```"

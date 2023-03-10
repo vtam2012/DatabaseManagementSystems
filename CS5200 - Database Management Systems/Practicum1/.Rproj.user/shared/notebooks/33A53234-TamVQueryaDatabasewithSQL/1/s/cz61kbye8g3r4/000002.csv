@@ -1,4 +1,0 @@
-"0","```sql
-/* How many customers never made a purchase, i.e., they appear in the customers table but not in the invoices table. */
-SELECT COUNT(customers.CustomerId) FROM customers WHERE customers.CustomerId NOT IN (SELECT invoices.CustomerId FROM invoices)
-```"

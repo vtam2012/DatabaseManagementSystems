@@ -1,4 +1,0 @@
-"0","```sql
-/* Verify incidents table */
-SELECT * FROM incidents LIMIT 10;
-```"

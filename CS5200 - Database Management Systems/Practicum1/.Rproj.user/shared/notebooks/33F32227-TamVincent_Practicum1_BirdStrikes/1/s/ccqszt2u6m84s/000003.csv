@@ -1,3 +1,0 @@
-"0","```r
-dbWriteTable(dbcon, \"conditions\", con, append = TRUE)
-```"

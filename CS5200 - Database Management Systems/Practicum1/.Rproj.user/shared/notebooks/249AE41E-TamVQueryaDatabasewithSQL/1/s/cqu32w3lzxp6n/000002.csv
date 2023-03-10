@@ -1,4 +1,0 @@
-"0","```sql
-/* last name, city, and state of all customers who made at least one purchase and live in Brazil */
-SELECT DISTINCT customers.LastName, customers.City, customers.State FROM customers INNER JOIN invoices ON customers.CustomerId = invoices.CustomerId WHERE customers.Country LIKE \"%Brazil%\"
-```"

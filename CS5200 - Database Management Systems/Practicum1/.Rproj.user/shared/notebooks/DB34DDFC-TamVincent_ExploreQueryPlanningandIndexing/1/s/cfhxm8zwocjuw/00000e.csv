@@ -1,3 +1,0 @@
-"0","/* Create an index on table film's replacement_cost column */
-CREATE INDEX filmReplacementCost
-    ON film (replacement_cost);"

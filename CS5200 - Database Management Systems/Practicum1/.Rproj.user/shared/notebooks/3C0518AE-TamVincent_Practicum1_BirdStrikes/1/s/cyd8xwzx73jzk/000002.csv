@@ -1,2 +1,0 @@
-"0","/* SQL query to find the flight phase that had an above average number bird strike incidents (during any flight phase)*/
-SELECT flightPhase FROM incidents WHERE flightPhase IN (SELECT COUNT(*) FROM incidents GROUP BY flightPhase) > (SELECT COUNT(*) / COUNT(DISTINCT flightPhase) FROM incidents);"

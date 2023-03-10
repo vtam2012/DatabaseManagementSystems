@@ -1,5 +1,0 @@
-"0","# Filter out rows that do not have a date"
-"0","# Assuming that date is the most important attribute. airline, and airport can be replaced with ""Unknown"", but flight_date is too important and cannont just be replaced. Thus, we drop rows which do not have a date on record."
-"0","bs<-bs[!apply(bs['flight_date'] == """", 1, any),]"
-"0",""
-"0","print(bs)"
